@@ -25,3 +25,12 @@ export async function connectToDatabase () {
        
          console.log(`Successfully connected to database: ${db.databaseName} and collection: ${gamesCollection.collectionName}`);
  }
+
+        /**
+         * dotenv.config(); pulls in the .env file so the values can be accessed when calling process.env. 
+         * The .config() call is empty as we use the default location for a .env file, 
+         * which is the root of the project. It then creates a new MongoDB client, 
+         * passing it the connection string, including valid user credentials. T
+         * hen it attempts to connect to MongoDB, the database, and the collection with the 
+         * names specified in .env, persisting this to the global collection variable for access externally.
+         */
