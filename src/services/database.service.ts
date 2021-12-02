@@ -5,7 +5,7 @@ import * as dotenv from "dotenv";
 
 // Global Variables
 
-export const collections: { games?: mongoDB.Collection } = {}
+export const collections: { games?: mongoDB.Collection } = {} // CHANGE TO MY COLLECTION
     //access collection outside the service
 
 // Initialize Connection to the database
