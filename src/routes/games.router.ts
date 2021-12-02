@@ -7,6 +7,10 @@ import Game from "../models/game";
 
 // Global Config
 
+export const gamesRouter = express.Router();
+
+gamesRouter.use(express.json());
+
 // GET
 
 // POST
