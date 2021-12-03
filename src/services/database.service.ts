@@ -10,7 +10,7 @@ export async function connectToDatabase() {
     dotenv.config();
 
     // Create a new MongoDB client with the connection string from .env
-    const client: mongoDB.MongoClient = new mongoDB.MongoClient(process.env.DB_CONN_STRING);
+    const client: mongoDB.MongoClient = new mongoDB.MongoClient(process.env.DB_CONN_STRING!);
 
     // Connect to the cluster
     await client.connect();
@@ -19,11 +19,11 @@ export async function connectToDatabase() {
     const db: mongoDB.Db = client.db(process.env.DB_NAME);
     
     // Apply schema validation to the collection
-    await applySchemaValidation(db);
+    //await applySchemaValidation(db);
 
 
     // Connect to the collection with the specific name from .env, found in the database previously specified
-    const gamesCollection: mongoDB.Collection = db.collection(process.env.GAMES_COLLECTION_NAME);
+    const gamesCollection: mongoDB.Collection = db.collection(process.env.GAMES_COLLECTION_NAME!);
 
     // Persist the connection to the Games collection
     collections.games = gamesCollection;
