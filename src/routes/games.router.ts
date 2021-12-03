@@ -62,4 +62,22 @@ gamesRouter.post("/", async (req: Request, res: Response) => {
 
 // PUT
 
+gamesRouter.put("/:id", async (req: Request, res: Response) => {
+    const id = req?.params?.id;
+
+    try {
+        const updatedGame: Game = req.body as Game;
+        const query = { _id: new ObjectId(id) };
+      
+        const result = await collections.games.updateOne(query, { $set: updatedGame });
+
+        result
+            ? res.status(200).send(`Successfully updated game with id ${id}`)
+            : res.status(304).send(`Game with id: ${id} not updated`);
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).send(error.message);
+    }
+});
+
 // DELETE
