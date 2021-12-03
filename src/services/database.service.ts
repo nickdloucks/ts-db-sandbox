@@ -1,30 +1,37 @@
-// External Dependencies
-
+import { Express as ExpressApp } from "express";
 import * as mongoDB from "mongodb";
 import * as dotenv from "dotenv";
+import { env } from "process";
 
-// Global Variables
+export const collections: { games?: mongoDB.Collection } = {};
 
-export const collections: { games?: mongoDB.Collection } = {} // CHANGE TO MY COLLECTION
-    //access collection outside the service
-
-// Initialize Connection to the database
-
-export async function connectToDatabase () {
+export async function connectToDatabase() {
+    // Pulls in the .env file so it can be accessed from process.env. No path as .env is in root, the default location
     dotenv.config();
- 
-    const client: mongoDB.MongoClient = new mongoDB.MongoClient(process.env.DB_CONN_STRING!);
-            
+
+    // Create a new MongoDB client with the connection string from .env
+    const client: mongoDB.MongoClient = new mongoDB.MongoClient(process.env.DB_CONN_STRING);
+
+    // Connect to the cluster
     await client.connect();
-        
+
+    // Connect to the database with the name specified in .env
     const db: mongoDB.Db = client.db(process.env.DB_NAME);
-   
-    const gamesCollection: mongoDB.Collection = db.collection(process.env.GAMES_COLLECTION_NAME!);
- 
-  collections.games = gamesCollection;
-       
-         console.log(`Successfully connected to database: ${db.databaseName} and collection: ${gamesCollection.collectionName}`);
- }
+    
+    // Apply schema validation to the collection
+    await applySchemaValidation(db);
+
+
+    // Connect to the collection with the specific name from .env, found in the database previously specified
+    const gamesCollection: mongoDB.Collection = db.collection(process.env.GAMES_COLLECTION_NAME);
+
+    // Persist the connection to the Games collection
+    collections.games = gamesCollection;
+
+    console.log(
+        `Successfully connected to database: ${db.databaseName} and collection: ${gamesCollection.collectionName}`,
+    );
+}
 
         /**
          * dotenv.config(); pulls in the .env file so the values can be accessed when calling process.env. 
@@ -34,3 +41,4 @@ export async function connectToDatabase () {
          * hen it attempts to connect to MongoDB, the database, and the collection with the 
          * names specified in .env, persisting this to the global collection variable for access externally.
          */
+
