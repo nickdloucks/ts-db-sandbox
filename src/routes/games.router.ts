@@ -1,5 +1,4 @@
 // External Dependencies
-
 import express, { Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import { collections } from "../services/database.service";
@@ -11,16 +10,11 @@ export const gamesRouter = express.Router();
 
 gamesRouter.use(express.json());
 
-        /**
-         * We have to tell our router to use the json parser middleware built into Express, 
-         * which is why we call use(express.json());.
-         */
-
 // GET
-
 gamesRouter.get("/", async (_req: Request, res: Response) => {
     try {
-       const games = (await collections.games.find({}).toArray()) as Game[];
+        // Call find with an empty filter object, meaning it returns all documents in the collection. Saves as Game array to take advantage of types
+        const games = (await collections.games.find({}).toArray()) as Game[];
 
         res.status(200).send(games);
     } catch (error) {
@@ -28,11 +22,12 @@ gamesRouter.get("/", async (_req: Request, res: Response) => {
     }
 });
 
+// Example route: http://localhost:8080/games/610aaf458025d42e7ca9fcd0
 gamesRouter.get("/:id", async (req: Request, res: Response) => {
     const id = req?.params?.id;
 
     try {
-        
+        // _id in MongoDB is an objectID type so we need to find our specific document by querying
         const query = { _id: new ObjectId(id) };
         const game = (await collections.games.findOne(query)) as Game;
 
@@ -45,7 +40,6 @@ gamesRouter.get("/:id", async (req: Request, res: Response) => {
 });
 
 // POST
-
 gamesRouter.post("/", async (req: Request, res: Response) => {
     try {
         const newGame = req.body as Game;
@@ -61,14 +55,13 @@ gamesRouter.post("/", async (req: Request, res: Response) => {
 });
 
 // PUT
-
 gamesRouter.put("/:id", async (req: Request, res: Response) => {
     const id = req?.params?.id;
 
     try {
         const updatedGame: Game = req.body as Game;
         const query = { _id: new ObjectId(id) };
-      
+        // $set adds or updates all fields
         const result = await collections.games.updateOne(query, { $set: updatedGame });
 
         result
@@ -81,7 +74,6 @@ gamesRouter.put("/:id", async (req: Request, res: Response) => {
 });
 
 // DELETE
-
 gamesRouter.delete("/:id", async (req: Request, res: Response) => {
     const id = req?.params?.id;
 
