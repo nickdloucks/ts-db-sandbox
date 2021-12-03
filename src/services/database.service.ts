@@ -42,3 +42,42 @@ export async function connectToDatabase() {
          * names specified in .env, persisting this to the global collection variable for access externally.
          */
 
+
+// Update our existing collection with JSON schema validation so we know our documents will always match the shape of our Game model, even if added elsewhere.
+// For more information about schema validation, see this blog series: https://www.mongodb.com/blog/post/json-schema-validation--locking-down-your-model-the-smart-way
+async function applySchemaValidation(db: mongoDB.Db) {
+
+    const jsonSchema = {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["name", "price", "category"],
+            additionalProperties: false,
+            properties: {
+                _id: {},
+                name: {
+                    bsonType: "string",
+                    description: "'name' is required and is a string",
+                },
+                price: {
+                    bsonType: "number",
+                    description: "'price' is required and is a number",
+                },
+                category: {
+                    bsonType: "string",
+                    description: "'category' is required and is a string",
+                },
+            },
+        },
+    };
+
+    // Try applying the modification to the collection, if the collection doesn't exist, create it 
+   await db.command({
+        collMod: process.env.GAMES_COLLECTION_NAME,
+        validator: jsonSchema
+    }).catch(async (error: mongoDB.MongoServerError) => {
+        if(error.codeName === 'NamespaceNotFound') {
+            await db.createCollection(process.env.GAMES_COLLECTION_NAME, {validator: jsonSchema});
+        }
+    });
+
+}
