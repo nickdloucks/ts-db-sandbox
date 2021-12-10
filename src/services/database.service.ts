@@ -2,8 +2,9 @@ import { Express as ExpressApp } from "express";
 import * as mongoDB from "mongodb";
 import * as dotenv from "dotenv";
 import { env } from "process";
+import Game from "../models/game";
 
-export const collections: { games?: mongoDB.Collection } = {};
+export const collections: { games?: mongoDB.Collection<Game> } = {};
 
 export async function connectToDatabase() {
     // Pulls in the .env file so it can be accessed from process.env. No path as .env is in root, the default location
@@ -23,7 +24,7 @@ export async function connectToDatabase() {
 
 
     // Connect to the collection with the specific name from .env, found in the database previously specified
-    const gamesCollection: mongoDB.Collection = db.collection(process.env.GAMES_COLLECTION_NAME!);
+    const gamesCollection: mongoDB.Collection = db.collection<Game>(process.env.GAMES_COLLECTION_NAME!);
 
     // Persist the connection to the Games collection
     collections.games = gamesCollection;
